@@ -207,51 +207,17 @@ public class Game {
     }
 
     public void playGame() {
-        int startX = 0, startY = 0;
-        int endX = 0, endY = 0;
-        Scanner scanner = new Scanner(System.in);
-
+        int [] positions = new int[4];
         Player currentPlayer = this.m_white;
 
         // This method plays in main and continues until
         while(true) {
-            System.out.println("Please enter the position of the piece to move, in the format ");
+            if (!getMoveInput(positions, currentPlayer)) { continue;}
 
-            boolean isAnInt = scanner.hasNextInt();
-            if(isAnInt) {
-                startX = scanner.nextInt();
-            }
+            if (this.m_gameboard.getGameboard()[positions[2]][positions[3]] != null) {
+                if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canCapture(positions[2], positions[3])) {
 
-            isAnInt = scanner.hasNextInt();
-            if(isAnInt) {
-                startY = scanner.nextInt();
-            }
-
-            System.out.println("Please enter where you would like the piece to move/capture");
-
-            isAnInt = scanner.hasNextInt();
-            if(isAnInt) {
-                endX = scanner.nextInt();
-            }
-
-            isAnInt = scanner.hasNextInt();
-            if(isAnInt) {
-                endY = scanner.nextInt();
-            }
-
-            // Make sure there's a piece in our start position
-            if (this.m_gameboard.getGameboard()[startX][startY] == null) {
-                continue;
-            }
-            // And that it's a piece of the current player
-            else if (this.m_gameboard.getGameboard()[startX][startY].getM_player().getColour().compareTo(currentPlayer.getColour()) != 0) {
-                continue;
-            }
-
-            if (this.m_gameboard.getGameboard()[endX][endY] != null) {
-                if(this.m_gameboard.getGameboard()[startX][startY].canCapture(endX, endY)) {
-
-                    makeCapture(startX, startY, endX, endY);
+                    makeCapture(positions[0], positions[1], positions[2], positions[3]);
 
                     if (currentPlayer.getColour().compareTo("White") == 0) {
                         currentPlayer = this.m_black;
@@ -259,14 +225,14 @@ public class Game {
                         currentPlayer = this.m_white;
                     }
 
-                    if (this.m_gameboard.getGameboard()[endX][endY].getM_type().compareTo("King") == 0) {
+                    if (this.m_gameboard.getGameboard()[positions[2]][positions[3]].getM_type().compareTo("King") == 0) {
                         return;
                     }
 
                 }
             } else {
-                if(this.m_gameboard.getGameboard()[startX][startY].canMove(endX, endY)) {
-                    makeMove(startX, startY, endX, endY);
+                if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canMove(positions[2], positions[3])) {
+                    makeMove(positions[0], positions[1], positions[2], positions[3]);
 
                     if (currentPlayer.getColour().compareTo("White") == 0) {
                         currentPlayer = this.m_black;
@@ -278,5 +244,52 @@ public class Game {
 
             printBoard();
         }
+    }
+
+    private boolean getMoveInput(int[] positions, Player currentPlayer) {
+        // Returns false and forces user to retake move if inputs are not sufficient to make a move (e.g. incorrect
+        // inputs)
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter the position of the piece to move, in the format 'a1'");
+
+        // Take the characters from the input, and use ASCII numbering to get our board positions from this
+        String startInput = scanner.next();
+        positions[0] = startInput.charAt(0) - 97;
+        positions[1] = startInput.charAt(1) - 49;
+
+        // Checks to ensure input is correct
+        if ((positions[0] < 0 || positions[1] < 0) || (positions[0] > 7 || positions[1] > 7)) {
+            System.out.println("Please ensure input is in the format 'a1', 'b2', etc.");
+            return false;
+        }
+
+        // Make sure there's a piece in our start position
+        if (this.m_gameboard.getGameboard()[positions[0]][positions[1]] == null) {
+            System.out.println("Please ensure start position contains a piece of your colour");
+            return false;
+        }
+        // And that it's a piece of the current player (not an OR with above check due to length of the check, neater
+        // this way)
+        else if (this.m_gameboard.getGameboard()[positions[0]][positions[1]].getM_player().getColour().compareTo(currentPlayer.getColour()) != 0) {
+            System.out.println("Please ensure start position contains a piece of your colour");
+            return false;
+        }
+
+        System.out.println("Please enter where you would like the piece to move/capture, in the format 'a1'");
+
+        String endInput = scanner.next();
+        positions[2] = endInput.charAt(0) - 97;
+        positions[3] = endInput.charAt(1) - 49;
+
+        // Check to ensure input is correct
+        if ((positions[2] < 0 || positions[3] < 0) || (positions[2] > 7 || positions[3] > 7)) {
+            System.out.println("Please ensure input is in the format 'a1', 'b2', etc.");
+            return false;
+        }
+
+        return true;
+
+
     }
 }
