@@ -215,7 +215,7 @@ public class Game {
 
         // This method plays in main and continues until
         while(true) {
-            System.out.println("Please enter the position of the piece to move, in the format of 'a1'");
+            System.out.println("Please enter the position of the piece to move, in the format ");
 
             boolean isAnInt = scanner.hasNextInt();
             if(isAnInt) {
