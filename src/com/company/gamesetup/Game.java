@@ -5,9 +5,9 @@ import com.company.pieces.*;
 import java.util.Scanner;
 
 public class Game {
-    private Board m_gameboard;
-    private Player m_black;
-    private Player m_white;
+    private final Board m_gameboard;
+    private final Player m_black;
+    private final Player m_white;
     private int m_turnCounter;
 
     public Game() {
@@ -16,6 +16,10 @@ public class Game {
         this.m_white = new Player("White");
         this.m_turnCounter = 0;
 
+        normalSetup();
+    }
+
+    public void normalSetup() {
         // Black pieces
         this.m_gameboard.getGameboard()[0][6] = new Pawn(0, 6, m_black, m_gameboard);
         this.m_gameboard.getGameboard()[1][6] = new Pawn(1, 6, m_black, m_gameboard);
@@ -35,41 +39,6 @@ public class Game {
         this.m_gameboard.getGameboard()[3][7] = new Queen(3, 7, m_black, m_gameboard);
 
         // White pieces
-        this.m_gameboard.getGameboard()[0][1] = new Pawn(0, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[1][1] = new Pawn(1, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[2][1] = new Pawn(2, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[3][1] = new Pawn(3, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[4][1] = new Pawn(4, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[5][1] = new Pawn(5, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[6][1] = new Pawn(6, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[7][1] = new Pawn(7, 1, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[5][0] = new Bishop(5, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[2][0] = new Bishop(2, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[0][0] = new Rook(0, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[7][0] = new Rook(7, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[1][0] = new Knight(1, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[6][0] = new Knight(6, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[4][0] = new King(4, 0, m_white, m_gameboard);
-        this.m_gameboard.getGameboard()[3][0] = new Queen(3, 0, m_white, m_gameboard);
-    }
-
-    public void normalSetup() {
-        this.m_gameboard.getGameboard()[0][6] = new Pawn(0, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[1][6] = new Pawn(1, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[2][6] = new Pawn(2, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[3][6] = new Pawn(3, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[4][6] = new Pawn(4, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[5][6] = new Pawn(5, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[6][6] = new Pawn(6, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[7][6] = new Pawn(7, 6, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[2][7] = new Bishop(2, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[5][7] = new Bishop(5, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[0][7] = new Rook(0, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[7][7] = new Rook(7, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[1][7] = new Knight(1, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[6][7] = new Knight(6, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[4][7] = new King(4, 7, m_black, m_gameboard);
-        this.m_gameboard.getGameboard()[3][7] = new Queen(3, 7, m_black, m_gameboard);
         this.m_gameboard.getGameboard()[0][1] = new Pawn(0, 1, m_white, m_gameboard);
         this.m_gameboard.getGameboard()[1][1] = new Pawn(1, 1, m_white, m_gameboard);
         this.m_gameboard.getGameboard()[2][1] = new Pawn(2, 1, m_white, m_gameboard);
@@ -136,73 +105,57 @@ public class Game {
         // First we print the colour
         switch (piece.getM_player().getColour()) {
             case "White":
-                System.out.printf("W");
+                System.out.print("W");
                 break;
             case "Black":
-                System.out.printf("B");
+                System.out.print("B");
                 break;
             default:
                 break;
         }
 
         // Now we print the piece symbol
-
         switch (piece.getM_type()) {
             case "Pawn":
-                System.out.printf("p");
+                System.out.print("p");
                 break;
             case "Bishop":
-                System.out.printf("b");
+                System.out.print("b");
                 break;
             case "Rook":
-                System.out.printf("r");
+                System.out.print("r");
                 break;
             case "Knight":
-                System.out.printf("n");
+                System.out.print("n");
                 break;
             case "King":
-                System.out.printf("K");
+                System.out.print("K");
                 break;
             case "Queen":
-                System.out.printf("q");
+                System.out.print("q");
                 break;
             default:
                 break;
         }
     }
 
-    public boolean makeMove(int startX, int startY, int endX, int endY) {
-        // Check to make sure the move is within the board
-        if ((startX > 7 || startY > 7 || endX > 7 || endY > 7) || (startX < 0 || startY < 0 || endX < 0 || endY < 0)) {
-            return false;
-        }
-
+    public void makeMove(int startX, int startY, int endX, int endY) {
+        // Method to make the required steps to move in a turn
         if (this.m_gameboard.getGameboard()[startX][startY].canMove(endX, endY)) {
             this.m_gameboard.getGameboard()[endX][endY] = this.m_gameboard.getGameboard()[startX][startY];
             this.m_gameboard.getGameboard()[endX][endY].setPosition(endX, endY);
             this.m_gameboard.getGameboard()[endX][endY].incrementM_timesMoved();
             this.m_gameboard.getGameboard()[startX][startY] = null;
-            return true;
-        } else {
-            return false;
         }
-
     }
 
-    public boolean makeCapture(int startX, int startY, int endX, int endY) {
-        // Check to make sure the capture is within the board
-        if ((startX > 7 || startY > 7 || endX > 7 || endY > 7) || (startX < 0 || startY < 0 || endX < 0 || endY < 0)) {
-            return false;
-        }
-
+    public void makeCapture(int startX, int startY, int endX, int endY) {
+        // Method to make the required steps to capture in a turn
         if (this.m_gameboard.getGameboard()[startX][startY].canCapture(endX, endY)) {
             this.m_gameboard.getGameboard()[endX][endY] = this.m_gameboard.getGameboard()[startX][startY];
             this.m_gameboard.getGameboard()[endX][endY].setPosition(endX, endY);
             this.m_gameboard.getGameboard()[endX][endY].incrementM_timesMoved();
             this.m_gameboard.getGameboard()[startX][startY] = null;
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -210,7 +163,11 @@ public class Game {
         int [] positions = new int[4];
         Player currentPlayer = this.m_white;
 
-        // This method plays in main and continues until
+        // This method plays in main and continues until the game is finished (checkmate or resignation)
+        // todo Implement Checkmate
+        // todo Implement Stalemate
+        // todo Implement resignation
+        // todo Implement draw
         while(true) {
             if (!getMoveInput(positions, currentPlayer)) { continue;}
 
@@ -243,6 +200,13 @@ public class Game {
             }
 
             printBoard();
+            this.m_turnCounter++;
+
+            if (checkTest(currentPlayer)) {
+
+
+                System.out.println(currentPlayer.getColour() + " is in check");
+            }
         }
     }
 
@@ -291,5 +255,53 @@ public class Game {
         return true;
 
 
+    }
+
+    private boolean checkTest(Player nextPlayer) {
+        // This goes after the player's had their turn, and the player colour has subsequently changed
+
+        int kingPositionX = 10, kingPositionY = 10;
+
+        // Find the position of the player's king
+        for (int i = 0; i < this.m_gameboard.getGameboard().length; i++) {
+            for (int j = 0; j < this.m_gameboard.getGameboard().length; j++) {
+                if (this.m_gameboard.getGameboard()[i][j] != null) {
+                    if ((this.m_gameboard.getGameboard()[i][j].getM_player().getColour().compareTo(nextPlayer.getColour()) == 0)
+                            && (this.m_gameboard.getGameboard()[i][j].getM_type().compareTo("King")) == 0) {
+
+                        kingPositionX = i;
+                        kingPositionY = j;
+                    }
+                }
+            }
+        }
+
+        // Fails if we can't find king
+        if (kingPositionX == 10) { return false;}
+
+        // Check through each piece and see if it can capture the king. If so, we're in check and we return true
+        for (int i = 0; i < this.m_gameboard.getGameboard().length; i++) {
+            for (int j = 0; j < this.m_gameboard.getGameboard().length; j++) {
+                if (this.m_gameboard.getGameboard()[i][j] != null) {
+                    if (this.m_gameboard.getGameboard()[i][j].canCapture(kingPositionX, kingPositionY)) {
+                        return true;
+                    }
+                }
+
+            }
+        }
+
+        // If we make it to this point, the king is not under threat of capture, and therefore we're not in check
+        return false;
+    }
+
+    private boolean checkmateTest(Player nextPlayer) {
+        // This method checks for checkmate. It essentially creates a mimic board and simulates each potential move. If
+        // none of them result in being out of check, then it is checkmate
+
+
+
+
+        return false;
     }
 }
