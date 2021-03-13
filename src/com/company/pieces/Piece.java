@@ -53,6 +53,18 @@ public abstract class Piece {
         this.m_type = type;
     }
 
+    public void setM_gameboard(Board m_gameboard) {
+        this.m_gameboard = m_gameboard;
+    }
+
+    public void setM_player(Player m_player) {
+        this.m_player = m_player;
+    }
+
+    public void setM_timesMoved(int m_timesMoved) {
+        this.m_timesMoved = m_timesMoved;
+    }
+
     public void incrementM_timesMoved() {
         this.m_timesMoved++;
     }

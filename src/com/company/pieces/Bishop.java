@@ -33,7 +33,6 @@ public class Bishop extends Piece {
 
             // If we find a piece on the tile we're checking, then we return false - the move isn't valid
             if (this.getM_gameboard().getGameboard()[checkXPosition][checkYPosition] != null) {
-                System.out.println(checkXPosition + " " + checkYPosition);
                 return false;
             }
         }

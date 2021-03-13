@@ -79,10 +79,13 @@ public class King extends Piece{
         if (x == this.getM_x() && y == this.getM_y()) { return false;}
 
         // Next we make sure the king is only moving by one space
-        if (Math.abs(x - this.getM_x()) + Math.abs(y - this.getM_y()) != 1) { return false;}
+        if ((Math.abs(x - this.getM_x()) > 1) || (Math.abs(y - this.getM_y()) > 1)) { return false;}
 
-        // Now make sure there is a piece on the space we are moving to
+        // Now make sure there is an enemy piece on the space we are moving to
         if (this.getM_gameboard().getGameboard()[x][y] == null) { return false;}
+        else if (this.getM_gameboard().getGameboard()[x][y].getM_player().getColour().compareTo(this.getM_player().getColour()) == 0) {
+            return false;
+        }
 
         // Next we set up a new imaginary board and place a piece on the tile that we are looking to move to.
         // We then check if any of the enemy pieces would be able to capture on this tile, as the king can't move
@@ -95,6 +98,9 @@ public class King extends Piece{
         for (int i = 0; i < this.getM_gameboard().getGameboard().length; i++) {
             for (int j = 0; j < this.getM_gameboard().getGameboard()[i].length; j++) {
                 checkingBoard.getGameboard()[i][j] = this.getM_gameboard().getGameboard()[i][j];
+                if (checkingBoard.getGameboard()[i][j] != null) {
+                    checkingBoard.getGameboard()[i][j].setM_gameboard(checkingBoard);
+                }
             }
         }
 
