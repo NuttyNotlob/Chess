@@ -161,37 +161,9 @@ public class Board {
                                 if ((this.m_gameboard[a][b] != null && this.m_gameboard[i][j].canCapture(a,b)) ||
                                         (this.m_gameboard[a][b] == null && this.m_gameboard[i][j].canMove(a,b))) {
 
-                                    // We need a new board to place imaginary pieces on it for checking
-                                    Board checkingBoard = new Board();
-
-                                    // Then make a copy of the original board layout through a loop (as it's a 2D array)
-                                    for (int c = 0; c < this.m_gameboard.length; c++) {
-                                        for (int d = 0; d < this.m_gameboard[i].length; d++) {
-                                            if (this.m_gameboard[c][d] != null) {
-                                                switch (this.m_gameboard[c][d].getM_type()) {
-                                                    case "King":
-                                                        checkingBoard.getGameboard()[c][d] = new King(c,d,this.m_gameboard[c][d].getM_player(),checkingBoard);
-                                                        break;
-                                                    case "Queen":
-                                                        checkingBoard.getGameboard()[c][d] = new Queen(c,d,this.m_gameboard[c][d].getM_player(),checkingBoard);
-                                                        break;
-                                                    case "Knight":
-                                                        checkingBoard.getGameboard()[c][d] = new Knight(c,d,this.m_gameboard[c][d].getM_player(),checkingBoard);
-                                                        break;
-                                                    case "Bishop":
-                                                        checkingBoard.getGameboard()[c][d] = new Bishop(c,d,this.m_gameboard[c][d].getM_player(),checkingBoard);
-                                                        break;
-                                                    case "Rook":
-                                                        checkingBoard.getGameboard()[c][d] = new Rook(c,d,this.m_gameboard[c][d].getM_player(),checkingBoard);
-                                                        break;
-                                                    case "Pawn":
-                                                        checkingBoard.getGameboard()[c][d] = new Pawn(c,d,this.m_gameboard[c][d].getM_player(),checkingBoard);
-                                                        break;
-                                                }
-                                                checkingBoard.getGameboard()[c][d].setM_timesMoved(this.m_gameboard[c][d].getM_timesMoved());
-                                            }
-                                        }
-                                    }
+                                    // We make a copy of our current board which we use for checking each move to see if
+                                    // it beats checkmate
+                                    Board checkingBoard = copyBoardTo();
 
                                     // Make the potential move
                                     checkingBoard.m_gameboard[a][b] = checkingBoard.m_gameboard[i][j];
@@ -212,5 +184,40 @@ public class Board {
 
         // If we get to this point there is no valid move for the player in check
         return true;
+    }
+
+    public Board copyBoardTo() {
+        Board copyOfBoard = new Board();
+
+        // Then make a copy of the original board layout through a loop (as it's a 2D array)
+        for (int c = 0; c < this.m_gameboard.length; c++) {
+            for (int d = 0; d < this.m_gameboard[c].length; d++) {
+                if (this.m_gameboard[c][d] != null) {
+                    switch (this.m_gameboard[c][d].getM_type()) {
+                        case "King":
+                            copyOfBoard.getGameboard()[c][d] = new King(c,d,this.m_gameboard[c][d].getM_player(),copyOfBoard);
+                            break;
+                        case "Queen":
+                            copyOfBoard.getGameboard()[c][d] = new Queen(c,d,this.m_gameboard[c][d].getM_player(),copyOfBoard);
+                            break;
+                        case "Knight":
+                            copyOfBoard.getGameboard()[c][d] = new Knight(c,d,this.m_gameboard[c][d].getM_player(),copyOfBoard);
+                            break;
+                        case "Bishop":
+                            copyOfBoard.getGameboard()[c][d] = new Bishop(c,d,this.m_gameboard[c][d].getM_player(),copyOfBoard);
+                            break;
+                        case "Rook":
+                            copyOfBoard.getGameboard()[c][d] = new Rook(c,d,this.m_gameboard[c][d].getM_player(),copyOfBoard);
+                            break;
+                        case "Pawn":
+                            copyOfBoard.getGameboard()[c][d] = new Pawn(c,d,this.m_gameboard[c][d].getM_player(),copyOfBoard);
+                            break;
+                    }
+                    copyOfBoard.getGameboard()[c][d].setM_timesMoved(this.m_gameboard[c][d].getM_timesMoved());
+                }
+            }
+        }
+
+        return copyOfBoard;
     }
 }

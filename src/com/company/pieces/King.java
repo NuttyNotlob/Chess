@@ -26,14 +26,7 @@ public class King extends Piece{
         // into check
 
         // We need a new board to place imaginary pieces on it for checking
-        Board checkingBoard = new Board();
-
-        // Then make a copy of the original board layout through a loop (as it's a 2D array)
-        for (int i = 0; i < this.getM_gameboard().getGameboard().length; i++) {
-            for (int j = 0; j < this.getM_gameboard().getGameboard()[i].length; j++) {
-                checkingBoard.getGameboard()[i][j] = this.getM_gameboard().getGameboard()[i][j];
-            }
-        }
+        Board checkingBoard = this.getM_gameboard().copyBoardTo();
 
         // Need to know the opposition's colour, based on what our pieces colour is
         String oppositionColour;
@@ -92,17 +85,7 @@ public class King extends Piece{
         // into check
 
         // We need a new board to place imaginary pieces on it for checking
-        Board checkingBoard = new Board();
-
-        // Then make a copy of the original board layout through a loop (as it's a 2D array)
-        for (int i = 0; i < this.getM_gameboard().getGameboard().length; i++) {
-            for (int j = 0; j < this.getM_gameboard().getGameboard()[i].length; j++) {
-                checkingBoard.getGameboard()[i][j] = this.getM_gameboard().getGameboard()[i][j];
-                if (checkingBoard.getGameboard()[i][j] != null) {
-                    checkingBoard.getGameboard()[i][j].setM_gameboard(checkingBoard);
-                }
-            }
-        }
+        Board checkingBoard = this.getM_gameboard().copyBoardTo();
 
         // Need to know the opposition's colour, based on what our pieces colour is
         String oppositionColour;

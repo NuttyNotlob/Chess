@@ -126,7 +126,6 @@ public class Game {
         this.m_gameboard.printBoard();
 
         // This method plays in main and continues until the game is finished (checkmate or resignation)
-        // todo Implement Checkmate
         // todo Implement Stalemate
         // todo Implement resignation
         // todo Implement draw
@@ -135,10 +134,6 @@ public class Game {
 
             if (this.m_gameboard.getGameboard()[positions[2]][positions[3]] != null) {
                 if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canCapture(positions[2], positions[3])) {
-
-                    if (this.m_gameboard.getGameboard()[positions[2]][positions[3]].getM_type().compareTo("King") == 0) {
-                        return;
-                    }
 
                     makeCapture(positions[0], positions[1], positions[2], positions[3]);
 
