@@ -20,6 +20,22 @@ public class Game {
         normalSetup();
     }
 
+    public Board getM_gameboard() {
+        return m_gameboard;
+    }
+
+    public Player getM_black() {
+        return m_black;
+    }
+
+    public Player getM_white() {
+        return m_white;
+    }
+
+    public int getM_turnCounter() {
+        return m_turnCounter;
+    }
+
     public void normalSetup() {
         // Black pieces
         this.m_gameboard.getGameboard()[0][6] = new Pawn(0, 6, m_black, m_gameboard);
@@ -58,46 +74,6 @@ public class Game {
         this.m_gameboard.getGameboard()[3][0] = new Queen(3, 0, m_white, m_gameboard);
     }
 
-    public void printPiece(Piece piece) {
-        // Prints an output for the piece, used in the printBoard() method
-
-        // First we print the colour
-        switch (piece.getM_player().getColour()) {
-            case "White":
-                System.out.print("W");
-                break;
-            case "Black":
-                System.out.print("B");
-                break;
-            default:
-                break;
-        }
-
-        // Now we print the piece symbol
-        switch (piece.getM_type()) {
-            case "Pawn":
-                System.out.print("p");
-                break;
-            case "Bishop":
-                System.out.print("b");
-                break;
-            case "Rook":
-                System.out.print("r");
-                break;
-            case "Knight":
-                System.out.print("n");
-                break;
-            case "King":
-                System.out.print("K");
-                break;
-            case "Queen":
-                System.out.print("q");
-                break;
-            default:
-                break;
-        }
-    }
-
     public void makeMove(int startX, int startY, int endX, int endY) {
         // Method to make the required steps to move in a turn
         if (this.m_gameboard.getGameboard()[startX][startY].canMove(endX, endY)) {
@@ -118,9 +94,10 @@ public class Game {
         }
     }
 
-    public void playGame() {
+    public int playGame() {
         int [] positions = new int[4];
         Player currentPlayer = this.m_white;
+        Scanner scanner = new Scanner(System.in);
 
         System.out.println("\nWelcome to Chess! White to start");
         this.m_gameboard.printBoard();
@@ -130,7 +107,7 @@ public class Game {
         // todo Implement resignation
         // todo Implement draw
         while(true) {
-            if (!getMoveInput(positions, currentPlayer)) { continue;}
+            if (!getMoveInput(positions, currentPlayer, scanner)) { continue;}
 
             if (this.m_gameboard.getGameboard()[positions[2]][positions[3]] != null) {
                 if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canCapture(positions[2], positions[3])) {
@@ -165,17 +142,17 @@ public class Game {
             if (this.m_gameboard.checkTest(currentPlayer)) {
                 if (this.m_gameboard.checkmateTest(currentPlayer)) {
                     System.out.println(currentPlayer.getColour() + " has been checkmated! Game over");
-                    return;
+                    return 1;
                 }
                 System.out.println(currentPlayer.getColour() + " is in check");
             }
         }
     }
 
-    private boolean getMoveInput(int[] positions, Player currentPlayer) {
+    private boolean getMoveInput(int[] positions, Player currentPlayer, Scanner scanner) {
         // Returns false and forces user to retake move if inputs are not sufficient to make a move (e.g. incorrect
         // inputs)
-        Scanner scanner = new Scanner(System.in);
+
 
         System.out.println("\nPlease enter the position of the piece to move, in the format 'a1'");
 
