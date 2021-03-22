@@ -108,6 +108,9 @@ public class Game {
         // todo Implement draw
         while(true) {
             if (!getMoveInput(positions, currentPlayer, scanner)) { continue;}
+            else if (positions[0] == 99) {
+                return 2;
+            }
 
             if (this.m_gameboard.getGameboard()[positions[2]][positions[3]] != null) {
                 if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canCapture(positions[2], positions[3])) {
@@ -152,12 +155,16 @@ public class Game {
     private boolean getMoveInput(int[] positions, Player currentPlayer, Scanner scanner) {
         // Returns false and forces user to retake move if inputs are not sufficient to make a move (e.g. incorrect
         // inputs)
-
-
-        System.out.println("\nPlease enter the position of the piece to move, in the format 'a1'");
+        System.out.println("\nPlease enter the position of the piece to move, in the format 'a1'. If you'd like to end the game, please type in 'END'");
 
         // Take the characters from the input, and use ASCII numbering to get our board positions from this
         String startInput = scanner.next();
+
+        if (startInput.compareTo("END") == 0) {
+            positions[0] = 99;
+            return true;
+        }
+
 
         // Check input length is correct
         if (startInput.length() != 2) {

@@ -38,6 +38,17 @@ public class Pawn extends Piece {
 
             // All that's left now is checking that where it's going is empty
             if (checkingBoard[x][y] == null) {
+
+                // Need to check the space between is empty if it's a two tile move
+                if (Math.abs(y - this.getM_y()) == 2) {
+                    if (checkingBoard[x][y-1] == null) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                // Else we're good to go
                 return true;
             }
 
@@ -50,6 +61,17 @@ public class Pawn extends Piece {
 
             // All that's left now is checking that where it's going is empty
             if (checkingBoard[x][y] == null) {
+
+                // Need to check the space between is empty if it's a two tile move
+                if (Math.abs(y - this.getM_y()) == 2) {
+                    if (checkingBoard[x][y+1] == null) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                // Else we're good to go
                 return true;
             }
 
