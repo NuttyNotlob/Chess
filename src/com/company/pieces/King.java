@@ -16,7 +16,7 @@ public class King extends Piece{
         if (x == this.getM_x() && y == this.getM_y()) { return false;}
 
         // Next we make sure the king is only moving by one space
-        if (Math.abs(x - this.getM_x()) + Math.abs(y - this.getM_y()) != 1) { return false;}
+        if ((Math.abs(x - this.getM_x()) > 1) || (Math.abs(y - this.getM_y()) > 1)) { return false;}
 
         // Now make sure there's no piece on the space we are moving to
         if (this.getM_gameboard().getGameboard()[x][y] != null) { return false;}

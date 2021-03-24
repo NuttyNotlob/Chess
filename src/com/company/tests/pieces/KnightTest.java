@@ -177,7 +177,7 @@ class KnightTest {
         Pawn pawnEight = new Pawn(2,3,white,board);
         board.getGameboard()[2][3] = pawnEight;
 
-        // Check it can make all the necessary captures
+        // Check it can still make all the necessary captures
         assertTrue(knight.canCapture(2,5));
         assertTrue(knight.canCapture(4,5));
         assertTrue(knight.canCapture(5,4));
