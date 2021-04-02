@@ -69,6 +69,10 @@ public abstract class Piece {
         this.m_timesMoved++;
     }
 
+    public String getPieceString() {
+        return this.m_player.getColour() + this.m_type;
+    }
+
     public abstract boolean canMove(int x, int y);
 
     public abstract boolean canCapture(int x, int y);
