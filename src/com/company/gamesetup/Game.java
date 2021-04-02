@@ -1,6 +1,7 @@
 package com.company.gamesetup;
 
 import com.company.GUI.ChessGUI;
+import com.company.GUI.GameSceneController;
 import com.company.pieces.*;
 
 import java.util.Scanner;
@@ -8,11 +9,11 @@ import java.util.SortedMap;
 
 public class Game {
 
-    private ChessGUI gameGUI;
     private final Board m_gameboard;
     private final Player m_black;
     private final Player m_white;
     private int m_turnCounter;
+    private ChessGUI gameGUI;
 
     public Game() {
         this.m_gameboard = new Board();
@@ -103,6 +104,13 @@ public class Game {
     }
 
     public int playGame() {
+        // First we set the controller of the game, now that the game has started
+        GameSceneController gameController = gameGUI.getGameController();
+
+        // Next we draw the board for the first time
+        gameController.drawBoard(this.getM_gameboard().getGameboard());
+
+        // Now we set up the variables required each turn to store the current player, and the moves they make
         int [] positions = new int[4];
         Player currentPlayer = this.m_white;
         Scanner scanner = new Scanner(System.in);
@@ -224,6 +232,10 @@ public class Game {
         return true;
 
 
+    }
+
+    public ChessGUI getGameGUI() {
+        return gameGUI;
     }
 
     public void setGameGUI(ChessGUI gameGUI) {

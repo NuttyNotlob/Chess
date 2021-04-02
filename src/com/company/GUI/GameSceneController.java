@@ -36,8 +36,7 @@ public class GameSceneController {
     }
 
     public void startGame() {
-        drawBoard(this.chessGame.getM_gameboard().getGameboard());
-        // this.chessGame.playGame();
+        this.chessGame.playGame();
     }
 
     public void drawBoard (Piece[][] boardState) {
