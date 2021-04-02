@@ -1,11 +1,14 @@
 package com.company.gamesetup;
 
+import com.company.GUI.ChessGUI;
 import com.company.pieces.*;
 
 import java.util.Scanner;
 import java.util.SortedMap;
 
 public class Game {
+
+    private ChessGUI gameGUI;
     private final Board m_gameboard;
     private final Player m_black;
     private final Player m_white;
@@ -18,6 +21,11 @@ public class Game {
         this.m_turnCounter = 0;
 
         normalSetup();
+    }
+
+    public Game(ChessGUI gameGUI) {
+        this();
+        this.gameGUI = gameGUI;
     }
 
     public Board getM_gameboard() {
@@ -109,6 +117,7 @@ public class Game {
         while(true) {
             if (!getMoveInput(positions, currentPlayer, scanner)) { continue;}
             else if (positions[0] == 99) {
+                System.out.println("Game has ended");
                 return 2;
             }
 
@@ -217,4 +226,7 @@ public class Game {
 
     }
 
+    public void setGameGUI(ChessGUI gameGUI) {
+        this.gameGUI = gameGUI;
+    }
 }
