@@ -40,6 +40,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="JavaFX" level="application" />
-    <orderEntry type="library" name="javafx-swt" level="project" />
+    <orderEntry type="library" name="JavaF" level="project" />
   </component>
 </module>
