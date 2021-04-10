@@ -25,6 +25,7 @@ public class Game {
 
 
     public Game() {
+        // Constructor that sets up board with a normal chess setup
         this.m_gameboard = new Board();
         this.m_black = new Player("Black");
         this.m_white = new Player("White");
@@ -33,28 +34,26 @@ public class Game {
         normalSetup();
     }
 
-    public Game(ChessGUI gameGUI) {
-        this();
-        this.gameGUI = gameGUI;
-    }
-
     public Board getM_gameboard() {
         return m_gameboard;
     }
 
-    public Player getM_black() {
-        return m_black;
+    public ChessGUI getGameGUI() {
+        return gameGUI;
     }
 
-    public Player getM_white() {
-        return m_white;
+    public void setGameGUI(ChessGUI gameGUI) {
+        this.gameGUI = gameGUI;
     }
 
-    public int getM_turnCounter() {
-        return m_turnCounter;
+    public void setMovePositions(int movePosition, int value) {
+        // Method used by MouseEvents in GUI to set the tiles that the player's move/capture is being made between
+        this.movePositions[movePosition] = value;
     }
 
     public void normalSetup() {
+        // Sets up the board in a normal chess layout
+
         // Black pieces
         this.m_gameboard.getGameboard()[0][6] = new Pawn(0, 6, m_black, m_gameboard);
         this.m_gameboard.getGameboard()[1][6] = new Pawn(1, 6, m_black, m_gameboard);
@@ -92,6 +91,91 @@ public class Game {
         this.m_gameboard.getGameboard()[3][0] = new Queen(3, 0, m_white, m_gameboard);
     }
 
+    public void startTurn() {
+        // This method is called at the start of the game, and subsequently at the start of each player's turn
+
+        if (this.m_turnCounter == 0) {
+            // This branch is followed only on turn 1, to set our class variables in place now that the game has started
+            // First we set the controller of the game
+            gameController = gameGUI.getGameController();
+
+            // White plays first
+            currentPlayer = this.m_white;
+
+            // We draw the board for the first time. After this, this is handled in the endTurn() method
+            // This goes into the endTurn() method as it will need to be drawn on a checkmate, when there would not be
+            // a next turn
+            gameController.drawBoard(this.getM_gameboard().getGameboard());
+        }
+
+        // Reset the movePositions variable to be empty
+        this.movePositions = new int[4];
+
+        // State who's turn it is in the informationDisplay
+        gameController.setInfoDisplay(currentPlayer.getColour() + " to play");
+
+        // Set the game controller to now take move inputs, after which it will call the playTurn() method
+        this.getGameGUI().getGameController().setTurnInputState("OwnPieceSelection");
+
+    }
+
+    public boolean playTurn() {
+        // This method is called when the players make their second tile selection for their move. It will return true
+        // if it is able to make that move, and subsequently moves to the endTurn() method through the
+        // GameSceneController. If the inputs mean it is unable to make a move, it will return false and the
+        // GameSceneController returns tot eh startTurn() method without changing player, essentially forcing the player
+        // to remake their selection
+
+        // Check to ensure there's a piece in our start position and, if there is, that it's a piece of our own colour
+        if ((this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]] == null) ||
+                (this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].getM_player().getColour().compareTo(currentPlayer.getColour()) != 0)) {
+            System.out.println("ERROR: Please ensure start position contains a piece of your colour");
+            return false;
+        }
+
+        // Make the move as a move or capture, depending on whether the target tile is empty. We also use the canMove()
+        // or canCapture() of the piece to check the validity of the move
+        // First we check for a capture
+        if (this.m_gameboard.getGameboard()[movePositions[2]][movePositions[3]] != null) {
+                if(this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].canCapture(movePositions[2], movePositions[3])) {
+                    // If it's all valid we make the capture and switch player
+                    makeCapture(movePositions[0], movePositions[1], movePositions[2], movePositions[3]);
+
+                    if (currentPlayer.getColour().compareTo("White") == 0) {
+                        currentPlayer = this.m_black;
+                    } else {
+                        currentPlayer = this.m_white;
+                    }
+
+                    this.m_turnCounter++;
+
+                    return true;
+                }
+
+            } else {
+            // Now the checks for a move
+                if(this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].canMove(movePositions[2], movePositions[3])) {
+                    // If it's all valid we make the move and switch player
+                    makeMove(movePositions[0], movePositions[1], movePositions[2], movePositions[3]);
+
+                    if (currentPlayer.getColour().compareTo("White") == 0) {
+                        currentPlayer = this.m_black;
+                    } else {
+                        currentPlayer = this.m_white;
+                    }
+
+                    this.m_turnCounter++;
+
+                    return true;
+                }
+            }
+
+        // If we manage to make it to this point then the move/capture was not valid, and so we return false. This works
+        // with the GameSceneController to essentially restart the turn with the startTurn() function
+        System.out.println("Invalid move/capture");
+        return false;
+    }
+
     public void makeMove(int startX, int startY, int endX, int endY) {
         // Method to make the required steps to move in a turn
         if (this.m_gameboard.getGameboard()[startX][startY].canMove(endX, endY)) {
@@ -112,106 +196,24 @@ public class Game {
         }
     }
 
-    public void startTurn() {
-        if (this.m_turnCounter == 0) {
-            // First we set the controller of the game, now that the game has started
-            gameController = gameGUI.getGameController();
-
-            // White plays first
-            currentPlayer = this.m_white;
-
-            // Draw the board for the first time. After this, this is handled in the endTurn() method
-            gameController.drawBoard(this.getM_gameboard().getGameboard());
-        }
-
-        // Now we set up the variables required each turn to store the current player, and the moves they make
-        this.movePositions = new int[4];
-
-
-        // State who's turn it is
-        gameController.setInfoDisplay(currentPlayer.getColour() + " to play");
-
-        // Set the game controller to now take move inputs, after which it will call the playTurn() method
-        this.getGameGUI().getGameController().setTurnInputState("OwnPieceSelection");
-
-    }
-
-    public boolean playTurn() {
-        // Returns false and forces user to retake move if inputs are not sufficient to make a move (e.g. incorrect
-        // inputs)
-
-        // Make sure there's a piece in our start position
-        if (this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]] == null) {
-            System.out.println("ERROR: Please ensure start position contains a piece of your colour");
-            return false;
-        }
-        // And that it's a piece of the current player (not an OR with above check due to length of the check, neater
-        // this way)
-        else if (this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].getM_player().getColour().compareTo(currentPlayer.getColour()) != 0) {
-            System.out.println("ERROR: Please ensure start position contains a piece of your colour");
-            return false;
-        }
-
-        if (this.m_gameboard.getGameboard()[movePositions[2]][movePositions[3]] != null) {
-                if(this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].canCapture(movePositions[2], movePositions[3])) {
-
-                    makeCapture(movePositions[0], movePositions[1], movePositions[2], movePositions[3]);
-
-                    if (currentPlayer.getColour().compareTo("White") == 0) {
-                        currentPlayer = this.m_black;
-                    } else {
-                        currentPlayer = this.m_white;
-                    }
-
-                    this.m_turnCounter++;
-
-                    return true;
-                }
-
-            } else {
-                if(this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].canMove(movePositions[2], movePositions[3])) {
-                    makeMove(movePositions[0], movePositions[1], movePositions[2], movePositions[3]);
-
-                    if (currentPlayer.getColour().compareTo("White") == 0) {
-                        currentPlayer = this.m_black;
-                    } else {
-                        currentPlayer = this.m_white;
-                    }
-
-                    this.m_turnCounter++;
-
-                    return true;
-                }
-            }
-
-        System.out.println("Invalid move/capture");
-        return false;
-    }
-
     public void endTurn() {
         // Re-draw the board into the GUI
         gameController.drawBoard(this.getM_gameboard().getGameboard());
 
+        // Make all necessary checks to see if the player is in check, or if checkmate has occurred
         if (this.m_gameboard.checkTest(currentPlayer)) {
             if (this.m_gameboard.checkmateTest(currentPlayer)) {
+                // If they are in checkmate, then the startTurn() function is not called as the game has finished
                 System.out.println(currentPlayer.getColour() + " has been checkmated! Game over");
             } else {
+                // Otherwise if they are just in check, the next turn is called
                 System.out.println(currentPlayer.getColour() + " is in check");
+                startTurn();
             }
         } else {
+            // If the player is not in check, we call for the next turn to start
             startTurn();
         }
     }
 
-    public ChessGUI getGameGUI() {
-        return gameGUI;
-    }
-
-    public void setGameGUI(ChessGUI gameGUI) {
-        this.gameGUI = gameGUI;
-    }
-
-    public void setMovePositions(int movePosition, int value) {
-        this.movePositions[movePosition] = value;
-    }
 }

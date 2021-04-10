@@ -5,6 +5,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="gameAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.GUI.GameSceneController">
@@ -20,5 +21,6 @@
             <Font name="Elephant" size="12.0" />
          </font>
       </Label>
+      <Rectangle fx:id="selectionMarker" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="64.0" layoutX="25.0" layoutY="11.0" stroke="#d40457" strokeType="INSIDE" strokeWidth="0.0" width="64.0" />
    </children>
 </AnchorPane>
