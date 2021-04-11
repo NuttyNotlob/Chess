@@ -4,8 +4,6 @@ import com.company.GUI.ChessGUI;
 import com.company.GUI.GameSceneController;
 import com.company.pieces.*;
 
-import java.util.concurrent.TimeUnit;
-
 public class Game {
 
     // This method plays in main and continues until the game is finished (checkmate or resignation)

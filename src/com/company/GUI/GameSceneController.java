@@ -125,6 +125,7 @@ public class GameSceneController {
                     // If the tile is empty, it requires an image for it to be clickable (and so able to be selected as
                     // a tile to move into on a player's turn). As such we set the image to be a BlackPawn, but set the
                     // image to be invisible
+                    // todo replace with larger piece as imageView clicker only works on image, not entire box
                     pieceImages[i][j].setImage(new Image(getClass().getResourceAsStream("Assets/BlackPawn.png")));
                     pieceImages[i][j].setOpacity(0);
                 }
