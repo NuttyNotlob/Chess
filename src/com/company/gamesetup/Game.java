@@ -1,17 +1,29 @@
 package com.company.gamesetup;
 
+import com.company.GUI.ChessGUI;
+import com.company.GUI.GameSceneController;
 import com.company.pieces.*;
 
-import java.util.Scanner;
-import java.util.SortedMap;
-
 public class Game {
+
+    // This method plays in main and continues until the game is finished (checkmate or resignation)
+    // todo Implement Stalemate
+    // todo Implement resignation
+    // todo Implement draw
+    // todo Implement end game
+
     private final Board m_gameboard;
     private final Player m_black;
     private final Player m_white;
+    private Player currentPlayer;
     private int m_turnCounter;
+    private ChessGUI gameGUI;
+    private int[] movePositions;
+    private GameSceneController gameController;
+
 
     public Game() {
+        // Constructor that sets up board with a normal chess setup
         this.m_gameboard = new Board();
         this.m_black = new Player("Black");
         this.m_white = new Player("White");
@@ -24,19 +36,22 @@ public class Game {
         return m_gameboard;
     }
 
-    public Player getM_black() {
-        return m_black;
+    public ChessGUI getGameGUI() {
+        return gameGUI;
     }
 
-    public Player getM_white() {
-        return m_white;
+    public void setGameGUI(ChessGUI gameGUI) {
+        this.gameGUI = gameGUI;
     }
 
-    public int getM_turnCounter() {
-        return m_turnCounter;
+    public void setMovePositions(int movePosition, int value) {
+        // Method used by MouseEvents in GUI to set the tiles that the player's move/capture is being made between
+        this.movePositions[movePosition] = value;
     }
 
     public void normalSetup() {
+        // Sets up the board in a normal chess layout
+
         // Black pieces
         this.m_gameboard.getGameboard()[0][6] = new Pawn(0, 6, m_black, m_gameboard);
         this.m_gameboard.getGameboard()[1][6] = new Pawn(1, 6, m_black, m_gameboard);
@@ -74,6 +89,91 @@ public class Game {
         this.m_gameboard.getGameboard()[3][0] = new Queen(3, 0, m_white, m_gameboard);
     }
 
+    public void startTurn() {
+        // This method is called at the start of the game, and subsequently at the start of each player's turn
+
+        if (this.m_turnCounter == 0) {
+            // This branch is followed only on turn 1, to set our class variables in place now that the game has started
+            // First we set the controller of the game
+            gameController = gameGUI.getGameController();
+
+            // White plays first
+            currentPlayer = this.m_white;
+
+            // We draw the board for the first time. After this, this is handled in the endTurn() method
+            // This goes into the endTurn() method as it will need to be drawn on a checkmate, when there would not be
+            // a next turn
+            gameController.drawBoard(this.getM_gameboard().getGameboard());
+        }
+
+        // Reset the movePositions variable to be empty
+        this.movePositions = new int[4];
+
+        // State who's turn it is in the informationDisplay
+        gameController.setInfoDisplay(currentPlayer.getColour() + " to play");
+
+        // Set the game controller to now take move inputs, after which it will call the playTurn() method
+        this.getGameGUI().getGameController().setTurnInputState("OwnPieceSelection");
+
+    }
+
+    public boolean playTurn() {
+        // This method is called when the players make their second tile selection for their move. It will return true
+        // if it is able to make that move, and subsequently moves to the endTurn() method through the
+        // GameSceneController. If the inputs mean it is unable to make a move, it will return false and the
+        // GameSceneController returns tot eh startTurn() method without changing player, essentially forcing the player
+        // to remake their selection
+
+        // Check to ensure there's a piece in our start position and, if there is, that it's a piece of our own colour
+        if ((this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]] == null) ||
+                (this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].getM_player().getColour().compareTo(currentPlayer.getColour()) != 0)) {
+            System.out.println("ERROR: Please ensure start position contains a piece of your colour");
+            return false;
+        }
+
+        // Make the move as a move or capture, depending on whether the target tile is empty. We also use the canMove()
+        // or canCapture() of the piece to check the validity of the move
+        // First we check for a capture
+        if (this.m_gameboard.getGameboard()[movePositions[2]][movePositions[3]] != null) {
+                if(this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].canCapture(movePositions[2], movePositions[3])) {
+                    // If it's all valid we make the capture and switch player
+                    makeCapture(movePositions[0], movePositions[1], movePositions[2], movePositions[3]);
+
+                    if (currentPlayer.getColour().compareTo("White") == 0) {
+                        currentPlayer = this.m_black;
+                    } else {
+                        currentPlayer = this.m_white;
+                    }
+
+                    this.m_turnCounter++;
+
+                    return true;
+                }
+
+            } else {
+            // Now the checks for a move
+                if(this.m_gameboard.getGameboard()[movePositions[0]][movePositions[1]].canMove(movePositions[2], movePositions[3])) {
+                    // If it's all valid we make the move and switch player
+                    makeMove(movePositions[0], movePositions[1], movePositions[2], movePositions[3]);
+
+                    if (currentPlayer.getColour().compareTo("White") == 0) {
+                        currentPlayer = this.m_black;
+                    } else {
+                        currentPlayer = this.m_white;
+                    }
+
+                    this.m_turnCounter++;
+
+                    return true;
+                }
+            }
+
+        // If we manage to make it to this point then the move/capture was not valid, and so we return false. This works
+        // with the GameSceneController to essentially restart the turn with the startTurn() function
+        System.out.println("Invalid move/capture");
+        return false;
+    }
+
     public void makeMove(int startX, int startY, int endX, int endY) {
         // Method to make the required steps to move in a turn
         if (this.m_gameboard.getGameboard()[startX][startY].canMove(endX, endY)) {
@@ -94,127 +194,24 @@ public class Game {
         }
     }
 
-    public int playGame() {
-        int [] positions = new int[4];
-        Player currentPlayer = this.m_white;
-        Scanner scanner = new Scanner(System.in);
+    public void endTurn() {
+        // Re-draw the board into the GUI
+        gameController.drawBoard(this.getM_gameboard().getGameboard());
 
-        System.out.println("\nWelcome to Chess! White to start");
-        this.m_gameboard.printBoard();
-
-        // This method plays in main and continues until the game is finished (checkmate or resignation)
-        // todo Implement Stalemate
-        // todo Implement resignation
-        // todo Implement draw
-        while(true) {
-            if (!getMoveInput(positions, currentPlayer, scanner)) { continue;}
-            else if (positions[0] == 99) {
-                return 2;
-            }
-
-            if (this.m_gameboard.getGameboard()[positions[2]][positions[3]] != null) {
-                if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canCapture(positions[2], positions[3])) {
-
-                    makeCapture(positions[0], positions[1], positions[2], positions[3]);
-
-                    if (currentPlayer.getColour().compareTo("White") == 0) {
-                        currentPlayer = this.m_black;
-                    } else {
-                        currentPlayer = this.m_white;
-                    }
-
-                    this.m_turnCounter++;
-
-                }
+        // Make all necessary checks to see if the player is in check, or if checkmate has occurred
+        if (this.m_gameboard.checkTest(currentPlayer)) {
+            if (this.m_gameboard.checkmateTest(currentPlayer)) {
+                // If they are in checkmate, then the startTurn() function is not called as the game has finished
+                System.out.println(currentPlayer.getColour() + " has been checkmated! Game over");
             } else {
-                if(this.m_gameboard.getGameboard()[positions[0]][positions[1]].canMove(positions[2], positions[3])) {
-                    makeMove(positions[0], positions[1], positions[2], positions[3]);
-
-                    if (currentPlayer.getColour().compareTo("White") == 0) {
-                        currentPlayer = this.m_black;
-                    } else {
-                        currentPlayer = this.m_white;
-                    }
-
-                    this.m_turnCounter++;
-                }
-            }
-
-            this.m_gameboard.printBoard();
-
-            if (this.m_gameboard.checkTest(currentPlayer)) {
-                if (this.m_gameboard.checkmateTest(currentPlayer)) {
-                    System.out.println(currentPlayer.getColour() + " has been checkmated! Game over");
-                    return 1;
-                }
+                // Otherwise if they are just in check, the next turn is called
                 System.out.println(currentPlayer.getColour() + " is in check");
+                startTurn();
             }
+        } else {
+            // If the player is not in check, we call for the next turn to start
+            startTurn();
         }
-    }
-
-    private boolean getMoveInput(int[] positions, Player currentPlayer, Scanner scanner) {
-        // Returns false and forces user to retake move if inputs are not sufficient to make a move (e.g. incorrect
-        // inputs)
-        System.out.println("\nPlease enter the position of the piece to move, in the format 'a1'. If you'd like to end the game, please type in 'END'");
-
-        // Take the characters from the input, and use ASCII numbering to get our board positions from this
-        String startInput = scanner.next();
-
-        if (startInput.compareTo("END") == 0) {
-            positions[0] = 99;
-            return true;
-        }
-
-
-        // Check input length is correct
-        if (startInput.length() != 2) {
-            System.out.println("ERROR: Please ensure input is in the format 'a1', 'b2', etc.");
-            return false;
-        }
-
-        positions[0] = startInput.charAt(0) - 97;
-        positions[1] = startInput.charAt(1) - 49;
-
-        // Checks to ensure input is correct
-        if ((positions[0] < 0 || positions[1] < 0) || (positions[0] > 7 || positions[1] > 7)) {
-            System.out.println("ERROR: Please ensure input is in the format 'a1', 'b2', etc.");
-            return false;
-        }
-
-        // Make sure there's a piece in our start position
-        if (this.m_gameboard.getGameboard()[positions[0]][positions[1]] == null) {
-            System.out.println("ERROR: Please ensure start position contains a piece of your colour");
-            return false;
-        }
-        // And that it's a piece of the current player (not an OR with above check due to length of the check, neater
-        // this way)
-        else if (this.m_gameboard.getGameboard()[positions[0]][positions[1]].getM_player().getColour().compareTo(currentPlayer.getColour()) != 0) {
-            System.out.println("ERROR: Please ensure start position contains a piece of your colour");
-            return false;
-        }
-
-        System.out.println("\nPlease enter where you would like the piece to move/capture, in the format 'a1'");
-
-        String endInput = scanner.next();
-
-        // Check input length is correct
-        if (endInput.length() != 2) {
-            System.out.println("ERROR: Please ensure input is in the format 'a1', 'b2', etc.");
-            return false;
-        }
-
-        positions[2] = endInput.charAt(0) - 97;
-        positions[3] = endInput.charAt(1) - 49;
-
-        // Check to ensure input is correct
-        if ((positions[2] < 0 || positions[3] < 0) || (positions[2] > 7 || positions[3] > 7)) {
-            System.out.println("ERROR: Please ensure input is in the format 'a1', 'b2', etc.");
-            return false;
-        }
-
-        return true;
-
-
     }
 
 }

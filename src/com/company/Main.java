@@ -1,11 +1,12 @@
 package com.company;
 
-import com.company.gamesetup.Game;
+import com.company.GUI.ChessGUI;
 
-public class Main {
+public class Main{
 
     public static void main(String[] args) {
-        Game chessGame = new Game();
-        chessGame.playGame();
+        ChessGUI gameGUI = new ChessGUI();
+        gameGUI.playGame();
     }
+
 }
